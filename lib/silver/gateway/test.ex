@@ -1,11 +1,11 @@
 defmodule Silver.Gateway.Test do
   @behaviour Silver.Gateway
 
-  def authorize(amount, credit_card, opts) do
+  def authorize(_amount, _credit_card, _opts, _config) do
     {:ok, :authorized}
   end
 
-  def charge(amount, credit_card, opts) do
+  def charge(_amount, _credit_card, _opts, _config) do
     {:ok, :charged}
   end
 end

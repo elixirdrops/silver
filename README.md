@@ -22,7 +22,6 @@ If [available in Hex](https://hex.pm/package/silver), the package can be install
 
     alias Silver.CreditCard
     alias Silver.Address
-    alias Silver.Order
 
     address = %Address {
       street1: "123 Street",
@@ -35,19 +34,19 @@ If [available in Hex](https://hex.pm/package/silver), the package can be install
     }
 
     credit_card = %CreditCard {
-      "first_name" => "John",
-      "last_name" => "Doe",
-      "expiry_month" => 09,
-      "expiry_year" => 2017,
-      "type" => "Visa",
-      "number" => 12321313132,
-      "cvv" => 123
+      first_name: "John",
+      last_name: "Doe",
+      expiry_month: 09,
+      expiry_year: 2017,
+      type: "Visa",
+      number: 4242424242424242,
+      cvv: 123
     }
 
     case CreditCard.valid?(credit_card) do
       {:ok, card} -> 
         # authorize using Silver.authorize() or make the purcahse
-        Silver.purchase(:paypal, 100.00, card, address, "Frog Tshirt - Order # 1")
+        Silver.charge(:stripe, 100.00, credit_card, address: address, description: "Frog Tshirt - Order # 1")
       {:error, errors} ->
         "Credit Card is not valid, do you have another one?"
     end

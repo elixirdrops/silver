@@ -7,9 +7,10 @@ defmodule Silver.Gateway do
   @type amount :: float
   @type card :: %Silver.CreditCard{}
   @type options :: Keyword.t
+  @type config :: Keyword.t
   @type response :: any
 
-  @callback authorize(amount, card, options) :: response
-  @callback charge(amount, card, options) :: response
+  @callback authorize(amount, card, options, config) :: response
+  @callback charge(amount, card, options, config) :: response
 
 end

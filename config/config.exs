@@ -31,13 +31,14 @@ use Mix.Config
 
 config :silver, :stripe,
   gateway: Silver.Gateway.Stripe,
-  name: :stripe,
-  api_key: "123"
+  api_key: "sk_test_BQokikJOvBiI2HlWgH4olfQ2",
+  secret: "",
+  currency: "USD"
 
 config :silver, :test,
   gateway: Silver.Gateway.Test,
-  name: :test,
-  api_key: "123"
+  api_key: "123",
+  currency: "USD"
 
 
 
