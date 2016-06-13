@@ -9,8 +9,8 @@ defmodule Silver.Gateway.Stripe do
   def charge(amount, credit_card, opts, config) do
     currency = Keyword.get(opts, :currency, config[:currency])
     opts = [amount: amount, credit_card: credit_card, currency: currency] ++ opts
-    params = normalize_params(opts)
-    config = normalize_config(config)
+    params = parse_params(opts)
+    config = parse_config(config)
     send_req(:post, "charges", params, config)
   end
 
@@ -27,39 +27,27 @@ defmodule Silver.Gateway.Stripe do
   end
 
   defp handle_resp(_) do
-    {:error, "Invalid transaction data"}
+    {:error, "Invalid purchase!"}
   end
 
-  defp normalize_params(opts) do
-    customer = Keyword.get(opts, :customer_id)
-    amount = Keyword.get(opts, :amount)
-    default = Keyword.take(opts, [:capture, :description, :currency])
-
-    default ++
-    customer_params(customer) ++ 
-    amount_params(amount) ++
-    address_params(opts[:address]) ++
-    credit_card_params(opts[:credit_card]) ++
-    connect_params(opts)
+  defp parse_params(opts) do
+    amount = Silver.Utils.to_cents(opts[:amount])
+    parse_address(opts[:address]) ++ 
+    parse_credit_card(opts[:credit_card]) ++
+    [customer: opts[:customer_id]
+      amount: amount,
+      currency: opts[:currency]
+      capture: opts[:capture]
+      description: opts[:description],
+      destination: opts[:destination],
+      application_fee: opts[:application_fee]]
   end
 
-  defp normalize_config(config) do
+  defp parse_config(config) do
     [basic_auth: {config[:api_key], config[:secret]}]
   end
 
-  defp connect_params(opts) do
-    Keyword.take(opts, [:destination, :application_fee])
-  end
-
-  defp amount_params(amount) do
-    [amount: Silver.Utils.to_cents(amount)]
-  end
-
-  defp customer_params(customer) do
-    [customer: customer]
-  end
-
-  defp address_params(address = %Silver.Address {}) do
+  defp parse_address(address = %Silver.Address {}) do
     ["card[address_line1]": address.street1,
      "card[address_line2]": address.street2,
      "card[address_city]":  address.city,
@@ -68,9 +56,9 @@ defmodule Silver.Gateway.Stripe do
      "card[address_country]": address.country]
   end
 
-  defp address_params(_), do: []
+  defp parse_address(_), do: []
 
-  defp credit_card_params(credit_card = %Silver.CreditCard {}) do
+  defp parse_credit_card(credit_card = %Silver.CreditCard {}) do
     ["card[number]": credit_card.number,
      "card[exp_year]": credit_card.expiry_year,
      "card[exp_month]":  credit_card.expiry_month,
@@ -78,7 +66,7 @@ defmodule Silver.Gateway.Stripe do
      "card[name]":   "#{credit_card.first_name} #{credit_card.last_name}"]
   end
 
-  defp credit_card_params(id) when is_integer(id) do
+  defp parse_credit_card(id) when is_integer(id) do
     [card: id]
   end
 

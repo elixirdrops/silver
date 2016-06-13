@@ -10,7 +10,7 @@ defmodule Silver.Utils do
   end
 
   defp filter_params(params) do
-    Enum.filter(params, fn {_key, value} -> value != nil end)
+    Enum.reject(params, fn {_key, value} -> is_nil(value) end)
   end
 
   def build_headers(_params) do

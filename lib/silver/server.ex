@@ -6,20 +6,20 @@ defmodule Silver.Server do
   end
 
   def handle_call({:authorize, name, amount, credit_card, opts}, _form, state) do
-    {gateway, config} = config_for_gateway(name)
+    {gateway, config} = parse_config(name)
     resp = gateway.authorize(amount, credit_card, opts, config)
 
     {:reply, resp, state}
   end
 
   def handle_call({:charge, name, amount, credit_card, opts}, _form, state) do
-    {gateway, config} = config_for_gateway(name)
+    {gateway, config} = parse_config(name)
     resp = gateway.charge(amount, credit_card, opts, config)
 
     {:reply, resp, state}
   end
 
-  defp config_for_gateway(name) do
+  defp parse_config(name) do
     config = Application.get_env(:silver, name, :stripe)
     gateway = Keyword.get(config, :gateway)
     {gateway, config}
