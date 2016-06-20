@@ -7,6 +7,7 @@ defmodule Silver do
     # Define workers and child supervisors to be supervised
     children = [
       worker(Silver.Server, [[], []]),
+      worker(Silver.Storage, [[], []]),
     ]
     opts = [strategy: :one_for_one, name: Silver.Supervisor]
     Supervisor.start_link(children, opts)

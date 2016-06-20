@@ -1,25 +1,20 @@
 defmodule Silver.Http do
-  def post(url, params, config) do
-    query_params = build_query_params(params)
-    headers = build_headers(params)
+  def post(url, params, headers, config) do
+    IO.inspect(url)
+    query_params = build_params(params)
     HTTPoison.post(url, query_params, headers, [hackney: config])
   end
 
-  def get(url, params, config) do
-    query_params = build_query_params(params)
-    headers = build_headers(params)
+  def get(url, params, headers, config) do
+    query_params = build_params(params)
     HTTPoison.get(url, query_params, headers, [hackney: config])
   end
 
-  def build_query_params(params) do
+  def build_params(params) do
     params |> filter_params |> URI.encode_query
   end
 
   def filter_params(params) do
     Enum.reject(params, fn {_key, value} -> is_nil(value) end)
-  end
-
-  def build_headers(_params) do
-    [{"Content-Type", "application/x-www-form-urlencoded"}]
   end
 end

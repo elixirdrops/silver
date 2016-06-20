@@ -35,6 +35,13 @@ config :silver, :stripe,
   secret: "",
   currency: "USD"
 
+config :silver, :paypal,
+  gateway: Silver.Gateway.Paypal,
+  currency: "USD",
+  client_id: "EOJ2S-Z6OoN_le_KS1d75wsZ6y0SFdVsY9183IvxFyZp",
+  secret: "EClusMEUk8e9ihI7ZdVLF5cZ6y0SFdVsY9183IvxFyZp",
+  env: :sandbox
+
 config :silver, :test,
   gateway: Silver.Gateway.Test,
   api_key: "123",

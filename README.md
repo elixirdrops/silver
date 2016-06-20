@@ -51,6 +51,26 @@ If [available in Hex](https://hex.pm/package/silver), the package can be install
         "Credit Card is not valid, do you have another one?"
     end
 
+Paypal example
+%{
+  "amount" => %{
+    "currency" => "USD",
+    "details" => %{"shipping" => "0.03", "subtotal" => "7.41", "tax" => "0.03"}, 
+    "total" => "7.47"
+  },
+  "description" => "This is the payment transaction description."
+}
+
+Silver.charge(
+  7.47,
+  credit_card,
+  address: address,
+  currency: "USD",
+  details: [shipping: 0.03, subtotal: 7.41, tax: 0.03],
+  description: "This is the payment transaction description.",
+  return_url: "http://YOUR_RETURN_URL",
+  cancel_url: "http://YOUR_CANCEL_URL"
+)
 
 Please note this is WIP, I am only working on it after hours, if you would like
 to sponser this project, please contact me.

@@ -24,7 +24,7 @@ defmodule Silver.Gateway.Stripe do
 
   defp send_req(:post, url, params) do 
     config = [basic_auth: {api_key, secret}]
-    {:ok, resp} = Silver.Http.post("#{@base_url}/#{url}", params, config)
+    {:ok, resp} = Silver.Http.post("#{@base_url}/#{url}", params, headers, config)
     resp |> handle_resp
   end
 
@@ -75,15 +75,22 @@ defmodule Silver.Gateway.Stripe do
   def build_credit_card(_), do: []
 
   # gateway config stuff
+  defp headers do
+    [{"Content-Type", "application/x-www-form-urlencoded"}]
+  end
+
   defp config do
     Application.get_env(:silver, :stripe)
   end
+
   defp api_key do
     config |> Keyword.get(:api_key)
   end
+
   defp secret do
     config |> Keyword.get(:secret)
   end
+  
   defp default_currency do
     config |> Keyword.get(:currency)
   end
