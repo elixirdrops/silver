@@ -6,7 +6,7 @@ defmodule Silver.Gateway.Paypal do
   def authorize(amount, credit_card, opts) do
     url = build_url("/v1/payments/payment/")
     params = build_params(amount, credit_card, opts) |> encode
-    
+    IO.inspect(url)
     url
     |> Silver.Http.post(params, headers(:with_token))
     |> handle_resp
@@ -17,7 +17,7 @@ defmodule Silver.Gateway.Paypal do
 
   def capture(amount, id, opts) do
     url = build_url("/v1/payments/authorization/#{id}/capture")
-    params = build_amount(:capture, amount, opts) |> encode
+    params = build_amount(:capture, amount, opts[:currency]) |> encode
     
     url
     |> Silver.Http.post(params)
@@ -76,7 +76,7 @@ defmodule Silver.Gateway.Paypal do
   end
 
   def build_params(amount, credit_card, opts) do
-    amount = build_amount(amount, opts)
+    amount = build_amount(amount, opts[:currency])
     credit_card = build_credit_card(credit_card)
 
     %{intent: "authorize",

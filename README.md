@@ -36,7 +36,7 @@ If [available in Hex](https://hex.pm/package/silver), the package can be install
       last_name: "Doe",
       expiry_month: 09,
       expiry_year: 2017,
-      type: "Visa",
+      type: "visa",
       number: 4242424242424242,
       cvv: 123
     }

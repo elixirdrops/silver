@@ -14,10 +14,10 @@ defmodule Silver do
   end
 
   def authorize(gateway, amount, credit_card, opts \\ []) do
-    GenServer.call(@name, {:authorize, gateway, amount, credit_card, opts})
+    GenServer.call(@name, {:authorize, gateway, amount, credit_card, opts}, 10000)
   end
 
   def charge(gateway, amount, credit_card, opts \\ []) do
-    GenServer.call(@name, {:charge, gateway, amount, credit_card, opts})
+    GenServer.call(@name, {:charge, gateway, amount, credit_card, opts}, 10000)
   end
 end
