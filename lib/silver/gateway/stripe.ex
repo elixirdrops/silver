@@ -11,7 +11,7 @@ defmodule Silver.Gateway.Stripe do
     send_req(:post, "charges", params)
   end
 
-  def capture(_id, _opts) do
+  def capture(_amount, _id, _opts) do
     # capture
   end
 

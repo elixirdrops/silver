@@ -1,6 +1,5 @@
 defmodule Silver.Http do
-  def post(url, params, headers, config) do
-    IO.inspect(url)
+  def post(url, params, headers, config \\ []) do
     query_params = build_params(params)
     HTTPoison.post(url, query_params, headers, [hackney: config])
   end
@@ -10,7 +9,11 @@ defmodule Silver.Http do
     HTTPoison.get(url, query_params, headers, [hackney: config])
   end
 
-  def build_params(params) do
+  def build_params(params) when is_binary(params) do
+    params
+  end
+
+  def build_params(params) when is_list(params) do
     params |> filter_params |> URI.encode_query
   end
 

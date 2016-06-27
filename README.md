@@ -20,10 +20,8 @@ If [available in Hex](https://hex.pm/package/silver), the package can be install
 
 ## Usage
 
-    alias Silver.CreditCard
-    alias Silver.Address
-
-    address = %Address {
+### Stripe
+    address = %Silver.Address {
       street1: "123 Street",
       street2: "",
       city: "Dubai",
@@ -33,7 +31,7 @@ If [available in Hex](https://hex.pm/package/silver), the package can be install
       phone: ""
     }
 
-    credit_card = %CreditCard {
+    credit_card = %Silver.CreditCard {
       first_name: "John",
       last_name: "Doe",
       expiry_month: 09,
@@ -51,29 +49,14 @@ If [available in Hex](https://hex.pm/package/silver), the package can be install
         "Credit Card is not valid, do you have another one?"
     end
 
-Paypal example
-%{
-  "amount" => %{
-    "currency" => "USD",
-    "details" => %{"shipping" => "0.03", "subtotal" => "7.41", "tax" => "0.03"}, 
-    "total" => "7.47"
-  },
-  "description" => "This is the payment transaction description."
-}
+### Paypal example
+    Silver.authorize(:paypal, 7.47, credit_card, currency: "USD", description: "Payment Description.")
 
-Silver.charge(
-  7.47,
-  credit_card,
-  address: address,
-  currency: "USD",
-  details: [shipping: 0.03, subtotal: 7.41, tax: 0.03],
-  description: "This is the payment transaction description.",
-  return_url: "http://YOUR_RETURN_URL",
-  cancel_url: "http://YOUR_CANCEL_URL"
-)
+## Note
 
-Please note this is WIP, I am only working on it after hours, if you would like
+Please note this is WIP, I am only working on it after hours, if you would like 
 to sponser this project, please contact me.
 
 ### License
+
 MIT copyright @ al-razi (saytoally@hotmail.com)

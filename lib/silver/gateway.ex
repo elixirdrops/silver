@@ -14,7 +14,7 @@ defmodule Silver.Gateway do
 
   @callback authorize(amount, credit_card, options) :: response
   @callback charge(amount, credit_card, options) :: response
-  @callback capture(id, options) :: response
+  @callback capture(amount, id, options) :: response
   @callback void(id, options) :: response
   @callback refund(amount, id, options) :: response
 
