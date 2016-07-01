@@ -9,7 +9,7 @@ defmodule Silver.Gateway.Test do
     {:ok, :charged}
   end
 
-  def capture(_id, _opts) do
+  def capture(_amount, _id, _opts) do
     {:ok, :captured}
   end
 

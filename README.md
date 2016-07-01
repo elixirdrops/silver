@@ -1,6 +1,6 @@
 # Silver
 
-$ilver a payment library for elixir.
+Silver a payment library for elixir.
 
 ## Installation
 
@@ -34,10 +34,10 @@ If [available in Hex](https://hex.pm/package/silver), the package can be install
     credit_card = %Silver.CreditCard {
       first_name: "John",
       last_name: "Doe",
-      expiry_month: 09,
-      expiry_year: 2017,
+      expiry_month: 07,
+      expiry_year: 2021,
       type: "visa",
-      number: 4242424242424242,
+      number: 4032038439477542,
       cvv: 123
     }
 

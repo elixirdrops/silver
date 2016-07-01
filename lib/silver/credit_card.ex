@@ -6,7 +6,7 @@ defmodule Silver.CreditCard do
     :expiry_year,
     :type,
     :number,
-     :cvv
+    :cvv
   ]
 
   def valid?(credit_card) do

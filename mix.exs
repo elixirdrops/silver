@@ -14,7 +14,7 @@ defmodule Silver.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :httpoison],
+    [applications: [:logger, :httpotion],
      mod: {Silver, []}]
   end
 
@@ -28,7 +28,7 @@ defmodule Silver.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:httpoison, "~> 0.8.3"},
+    [{:httpotion, "~> 3.0"},
      {:poison, "~> 2.1"}]
   end
 end

@@ -6,7 +6,7 @@ defmodule Silver.Gateway.Paypal do
   def authorize(amount, credit_card, opts) do
     url = build_url("/v1/payments/payment/")
     params = build_params(amount, credit_card, opts) |> encode
-    IO.inspect(url)
+
     url
     |> Silver.Http.post(params, headers(:with_token))
     |> handle_resp
@@ -18,9 +18,9 @@ defmodule Silver.Gateway.Paypal do
   def capture(amount, id, opts) do
     url = build_url("/v1/payments/authorization/#{id}/capture")
     params = build_amount(:capture, amount, opts[:currency]) |> encode
-    
+
     url
-    |> Silver.Http.post(params)
+    |> Silver.Http.post(params, headers())
     |> handle_resp
   end
 
@@ -33,7 +33,7 @@ defmodule Silver.Gateway.Paypal do
     |> handle_resp
   end
 
-  def void(id, opts) do
+  def void(id, _opts) do
     url = build_url("/v1/payments/authorization/#{id}/void")
     send_req(:post, url)
   end
@@ -55,7 +55,7 @@ defmodule Silver.Gateway.Paypal do
 
     url
     |> build_url
-    |> Silver.Http.post(url, params, headers(:with_token), config)
+    |> Silver.Http.post(params, headers(:with_token), config)
     |> handle_resp
   end
 
@@ -68,7 +68,7 @@ defmodule Silver.Gateway.Paypal do
 
   def build_amount(:capture, amount, currency) do
     %{amount: %{total: to_string(amount), currency: currency},
-      is_final_capture: true}
+     is_final_capture: true}
   end
 
   def build_amount(amount, currency) do
@@ -79,9 +79,10 @@ defmodule Silver.Gateway.Paypal do
     amount = build_amount(amount, opts[:currency])
     credit_card = build_credit_card(credit_card)
 
+
     %{intent: "authorize",
-      payer: %{payment_method: "credit_card", funding_instruments: [credit_card]},
-      transactions: [amount]}
+     payer: %{payment_method: "credit_card", funding_instruments: [credit_card]},
+     transactions: [amount]}
   end
 
   def build_credit_card(credit_card = %Silver.CreditCard {}) do
@@ -97,7 +98,7 @@ defmodule Silver.Gateway.Paypal do
   end
 
   @doc """
-    Headers requried to make a calls to paypal api.
+  Headers requried to make a calls to paypal api.
   """
   def headers(:with_token) do
     {token, _} = auth_token()
@@ -108,23 +109,22 @@ defmodule Silver.Gateway.Paypal do
 
   def headers do
     [{"Content-Type", "application/x-www-form-urlencoded"},
-    {"Accept", "application/json"}]
+     {"Accept", "application/json"}]
   end
 
   def handle_resp(response) do
     case response do
-      {:ok, %HTTPoison.Response{status_code: 401,  body: body, headers: _headers}} ->
+      %HTTPotion.Response{status_code: 401,  body: body, headers: _headers} ->
         {:ok, response} = Poison.decode(body)
         {:auth_error, response}
-      {:ok, %HTTPoison.Response{status_code: _, body: body, headers: _headers}} ->
+      %HTTPotion.Response{status_code: _, body: body, headers: _headers} ->
         {:ok, Poison.decode!(body)}
-      {:error, %HTTPoison.Error{reason: reason}} ->
+      reason ->
         {:error, reason}
     end
   end
 
   defp parse_token({:ok, resp}) do
-    IO.inspect(resp)
     {:ok, Map.get(resp, "access_token"), Map.get(resp, "expires_in")}
   end
 
@@ -147,7 +147,7 @@ defmodule Silver.Gateway.Paypal do
     case is_expired do
       true -> authenticate()
       _ -> 
-        Silver.Storage.get(:auth_token)
+      Silver.Storage.get(:auth_token)
     end
   end
 

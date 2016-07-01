@@ -1,12 +1,11 @@
 defmodule Silver.Http do
   def post(url, params, headers, config \\ []) do
     query_params = build_params(params)
-    HTTPoison.post(url, query_params, headers, [hackney: config])
+    HTTPotion.post(url, body: query_params, headers: headers, basic_auth: config[:basic_auth])
   end
 
-  def get(url, params, headers, config) do
-    query_params = build_params(params)
-    HTTPoison.get(url, query_params, headers, [hackney: config])
+  def get(url, opts) do
+    HTTPotion.get(url, opts)
   end
 
   def build_params(params) when is_binary(params) do
