@@ -4,33 +4,21 @@ defmodule Silver.Gateway.Paypal do
   @sandbox_url "https://api.sandbox.paypal.com"
 
   def authorize(amount, credit_card, opts) do
-    url = build_url("/v1/payments/payment/")
-    params = build_params(amount, credit_card, opts) |> encode
-
-    url
-    |> Silver.Http.post(params, headers(:with_token))
-    |> handle_resp
+    body = build_params(amount, credit_card, opts)
+    send_req(:post, "/v1/payments/payment/", body)
   end
 
   def charge(_amount, _credit_card, _opts) do
   end
 
-  def capture(amount, id, opts) do
-    url = build_url("/v1/payments/authorization/#{id}/capture")
-    params = build_amount(:capture, amount, opts[:currency]) |> encode
-
-    url
-    |> Silver.Http.post(params, headers())
-    |> handle_resp
+  def capture(amount, id, opts \\ []) do
+    body = build_amount(:capture, amount, opts[:currency])
+    send_req(:post, "/v1/payments/authorization/#{id}/capture", body)
   end
 
   def refund(amount, id, opts) do
-    url = build_url("/v1/payments/capture/#{id}/refund")
-    params = build_amount(amount, opts[:currency]) |> encode
-
-    url
-    |> Silver.Http.post(params, headers(:with_token))
-    |> handle_resp
+    body = build_amount(amount, opts[:currency])
+    send_req(:post, "/v1/payments/capture/#{id}/refund", body)
   end
 
   def void(id, _opts) do
@@ -39,23 +27,25 @@ defmodule Silver.Gateway.Paypal do
   end
 
   def authenticate do
-    config = [basic_auth: {client_id(), secret()}]
-    params = [grant_type: "client_credentials"]
-    url = build_url("/v1/oauth2/token/")
+    credentials = {client_id(), secret()}
+    body = [grant_type: "client_credentials"]
+    url = "/v1/oauth2/token/"
 
     url
-    |> Silver.Http.post(params, headers, config)
+    |> build_url
+    |> Silver.Http.post(body, headers, basic_auth: credentials)
     |> handle_resp
     |> parse_token
     |> update_token
   end
 
-  def send_req(:post, url, params \\ []) do
+  def send_req(:post, url, body \\ []) do
     config = []
+    body = encode(body)
 
     url
     |> build_url
-    |> Silver.Http.post(params, headers(:with_token), config)
+    |> Silver.Http.post(body, headers(:with_token), config)
     |> handle_resp
   end
 
@@ -68,7 +58,7 @@ defmodule Silver.Gateway.Paypal do
 
   def build_amount(:capture, amount, currency) do
     %{amount: %{total: to_string(amount), currency: currency},
-     is_final_capture: true}
+      is_final_capture: true}
   end
 
   def build_amount(amount, currency) do
@@ -78,7 +68,6 @@ defmodule Silver.Gateway.Paypal do
   def build_params(amount, credit_card, opts) do
     amount = build_amount(amount, opts[:currency])
     credit_card = build_credit_card(credit_card)
-
 
     %{intent: "authorize",
      payer: %{payment_method: "credit_card", funding_instruments: [credit_card]},
@@ -93,8 +82,7 @@ defmodule Silver.Gateway.Paypal do
       expire_year: credit_card.expiry_year,
       cvv2: credit_card.cvv,
       first_name: credit_card.first_name,
-      last_name: credit_card.last_name
-    }}
+      last_name: credit_card.last_name}}
   end
 
   @doc """

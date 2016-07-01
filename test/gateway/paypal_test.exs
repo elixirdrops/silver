@@ -10,10 +10,20 @@ defmodule Silver.Gateway.PaypalTest do
       cvv: 123
     }
 
-  test "authorization a payment" do
-  	{:ok, resp} = Silver.authorize(:paypal, 7.47, @credit_card, currency: "USD", description: "Payment Description.")
-    assert resp["state"] == "approved"
-
+  setup do
+    {:ok, payment} = Silver.authorize(:paypal, 7.47, @credit_card, currency: "USD", description: "Payment Description.")
+    {:ok, %{payment: payment}}
   end
 
+  test "authorize a payment", %{payment: payment} do
+    assert payment["state"] == "approved"
+  end
+
+  test "capture a authorized payment", %{payment: payment} do
+    transactions = List.first(payment["transactions"]) 
+    resource = List.first(transactions["related_resources"])
+    authorization = resource["authorization"]
+    {:ok, resp} = Silver.capture(:paypal, 7.47, authorization["id"], currency: "USD")
+    assert resp["state"] == "completed"
+  end
 end
